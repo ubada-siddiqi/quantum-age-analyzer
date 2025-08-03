@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Age Calculation System™</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #00ff00;
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Matrix background will go here */
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            margin-top: 50px;
+        }
+        
+        .title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff00;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        .subtitle {
+            text-align: center;
+            font-size: 1rem;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #00ff00; }
+            to { text-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00; }
+        }
+        
+        .question-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .question {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            background: #000;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            border-radius: 5px;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 10px #00ff00;
+        }
+        
+        .btn {
+            background: #000;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 15px 30px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+            display: block;
+            margin: 30px auto;
+        }
+        
+        .btn:hover {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 15px #00ff00;
+        }
+        
+        .processing {
+            display: none;
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .processing-text {
+            font-size: 1.2rem;
+            margin: 10px 0;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #00aa00);
+            width: 0%;
+            transition: width 0.5s ease;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .result {
+            display: none;
+            text-align: center;
+            margin: 30px 0;
+            padding: 30px;
+            border: 3px solid #00ff00;
+            border-radius: 10px;
+            background: rgba(0, 255, 0, 0.2);
+        }
+        
+        .result-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            animation: glow 1s ease-in-out infinite alternate;
+        }
+        
+        .result-age {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ffff00;
+            text-shadow: 0 0 20px #ffff00;
+            margin: 20px 0;
+        }
+        
+        .confidence {
+            font-size: 1.1rem;
+            margin-top: 15px;
+            opacity: 0.9;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .step {
+            margin-bottom: 20px;
+        }
+        
+        .warning {
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid #ffff00;
+            color: #ffff00;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding: 30px 20px;
+            text-align: center;
+            border-top: 1px solid #00ff00;
+            background: rgba(0, 0, 0, 0.9);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .creator-name {
+            color: #00ffff;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00ffff;
+            animation: glow-cyan 2s ease-in-out infinite alternate;
+        }
+        
+        .footer-tagline {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
+        @keyframes glow-cyan {
+            from { text-shadow: 0 0 10px #00ffff; }
+            to { text-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">ADVANCED AGE CALCULATION SYSTEM™</h1>
+        <p class="subtitle">Powered by Quantum Neural Networks & Breakfast Analytics</p>
+        
+        <div class="warning">
+            ⚠️ WARNING: This system uses highly advanced algorithms. Please ensure all data is accurate for optimal age prediction. ⚠️
+        </div>
+        
+        <div id="questions">
+            <div class="step" id="step1">
+                <div class="question-container">
+                    <div class="question">Step 1: Primary Age Input (Critical Data Point)</div>
+                    <input type="number" id="age" placeholder="Enter your age" min="0" max="150">
+                </div>
+            </div>
+            
+            <div class="step hidden" id="step2">
+                <div class="question-container">
+                    <div class="question">Step 2: Chromatic Preference Analysis</div>
+                    <select id="color">
+                        <option value="">Select your favorite color</option>
+                        <option value="red">Red (High Energy Coefficient)</option>
+                        <option value="blue">Blue (Stability Index)</option>
+                        <option value="green">Green (Growth Factor)</option>
+                        <option value="yellow">Yellow (Optimism Variable)</option>
+                        <option value="purple">Purple (Creativity Multiplier)</option>
+                        <option value="black">Black (Im' Batman)</option>
+                        <option value="rainbow">Rainbow (LGBT hui hui huiii)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="step hidden" id="step3">
+                <div class="question-container">
+                    <div class="question">Step 3: Pedal Extremity Size Correlation</div>
+                    <input type="number" id="shoeSize" placeholder="Enter your shoe size" step="0.5" min="1" max="20">
+                </div>
+            </div>
+            
+            <div class="step hidden" id="step4">
+                <div class="question-container">
+                    <div class="question">Step 4: Domestic Animal Quantity Assessment</div>
+                    <input type="number" id="pets" placeholder="Number of pets you have" min="0" max="50">
+                </div>
+            </div>
+            
+            <div class="step hidden" id="step5">
+                <div class="question-container">
+                    <div class="question">Step 5: Morning Nutritional Intake Analysis</div>
+                    <select id="breakfast">
+                        <option value="">What did you have for breakfast today?</option>
+                        <option value="cereal">Chai Biscuit (Traditional Path)</option>
+                        <option value="toast">Toast (Grain-Based Matrix)</option>
+                        <option value="eggs">Eggs (Protein Protocol)</option>
+                        <option value="fruit">Fruit (Natural Algorithm)</option>
+                        <option value="coffee">Just Coffee (Caffeine Addiction)</option>
+                        <option value="nothing">Nothing (Fasting Mode)</option>
+                        <option value="pizza">Pizza (Chaos Selection)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="step hidden" id="step6">
+                <div class="question-container">
+                    <div class="question">Step 6: Football GOAT Preference Analysis</div>
+                    <select id="pineapple">
+                        <option value="">Ronaldo or Messi?</option>
+                        <option value="ronaldo">Ronaldo (Select this option or You Gay)</option>
+                        <option value="messi">Messi</option>
+                        <option value="both">Both are GOATs (Diplomatic Protocol)</option>
+                        <option value="neither">Neither (Chaos Factor Activated)</option>
+                        <option value="what">What's football? (Reality Glitch Detected)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="step hidden" id="step7">
+                <div class="question-container">
+                    <div class="question">Step 7: Sock Disappearance Frequency</div>
+                    <select id="socks">
+                        <option value="">How often do your socks disappear in the laundry?</option>
+                        <option value="always">Always (Dimensional Rift Active)</option>
+                        <option value="often">Often (Portal Instability)</option>
+                        <option value="sometimes">Sometimes (Normal Reality)</option>
+                        <option value="never">Never (Sock Protection Engaged)</option>
+                        <option value="dont-wear">I don't wear socks (Rebel Factor)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button class="btn" onclick="nextStep()">INITIATE CALCULATION SEQUENCE</button>
+        </div>
+        
+        <div class="processing" id="processing">
+            <div class="processing-text">PROCESSING ADVANCED ALGORITHMS...</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div id="processingSteps"></div>
+        </div>
+        
+        <div class="result" id="result">
+            <div class="result-title">CALCULATION COMPLETE</div>
+            <div>Based on our quantum neural network analysis:</div>
+            <div class="result-age" id="resultAge">ERROR</div>
+            <div>Years Old</div>
+            <div class="confidence" id="confidence">Confidence Level: 99.99%</div>
+            <button class="btn" onclick="restart()">RUN ANOTHER ANALYSIS</button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Created by <span class="creator-name">Ubada Siddiqi</span></p>
+            <p class="footer-tagline">Powered by Advanced Quantum Nonsense Technology™</p>
+        </div>
+    </footer>
+
+    <script>
+        let currentStep = 1;
+        let userAge = 0;
+        let stepButton = document.querySelector('.btn');
+        
+        function nextStep() {
+            if (currentStep === 1) {
+                const age = document.getElementById('age').value;
+                if (!age) {
+                    alert('Please enter your age for accurate quantum calculations!');
+                    return;
+                }
+                userAge = parseInt(age);
+                showStep(2);
+                stepButton.textContent = 'CONTINUE ANALYSIS';
+            } else if (currentStep === 2) {
+                if (!document.getElementById('color').value) {
+                    alert('Color preference is crucial for the algorithm!');
+                    return;
+                }
+                showStep(3);
+            } else if (currentStep === 3) {
+                if (!document.getElementById('shoeSize').value) {
+                    alert('Shoe size correlation is essential!');
+                    return;
+                }
+                showStep(4);
+            } else if (currentStep === 4) {
+                if (!document.getElementById('pets').value && document.getElementById('pets').value !== '0') {
+                    alert('Pet quantity affects the calculation matrix!');
+                    return;
+                }
+                showStep(5);
+            } else if (currentStep === 5) {
+                if (!document.getElementById('breakfast').value) {
+                    alert('Breakfast data is required for nutritional analysis!');
+                    return;
+                }
+                showStep(6);
+            } else if (currentStep === 6) {
+                if (!document.getElementById('pineapple').value) {
+                    alert('GOAT preference is a critical variable!');
+                    return;
+                }
+                showStep(7);
+            } else if (currentStep === 7) {
+                if (!document.getElementById('socks').value) {
+                    alert('Sock data completes the quantum equation!');
+                    return;
+                }
+                startProcessing();
+            }
+        }
+        
+        function showStep(step) {
+            document.getElementById(`step${currentStep}`).classList.add('hidden');
+            document.getElementById(`step${step}`).classList.remove('hidden');
+            currentStep = step;
+            
+            if (step === 7) {
+                stepButton.textContent = 'EXECUTE FINAL CALCULATION';
+            }
+        }
+        
+        function startProcessing() {
+            document.getElementById('questions').style.display = 'none';
+            document.getElementById('processing').style.display = 'block';
+            
+            const steps = [
+                'Initializing quantum processors...',
+                'Analyzing chromatic preference patterns...',
+                'Cross-referencing shoe size with age demographics...',
+                'Processing pet-human relationship coefficients...',
+                'Evaluating breakfast nutritional impact on aging...',
+                'Computing Ronaldo vs Messi correlation matrix...',
+                'Calculating sock disappearance dimensional factors...',
+                'Running advanced machine learning algorithms...',
+                'Consulting ancient age prediction scrolls...',
+                'Verifying calculations with cosmic forces...',
+                'Finalizing age determination protocols...'
+            ];
+            
+            let progress = 0;
+            let stepIndex = 0;
+            const progressFill = document.getElementById('progressFill');
+            const processingSteps = document.getElementById('processingSteps');
+            
+            const interval = setInterval(() => {
+                if (stepIndex < steps.length) {
+                    processingSteps.innerHTML += `<div class="processing-text">${steps[stepIndex]}</div>`;
+                    stepIndex++;
+                }
+                
+                progress += Math.random() * 15 + 5;
+                if (progress > 100) progress = 100;
+                
+                progressFill.style.width = progress + '%';
+                
+                if (progress >= 100 && stepIndex >= steps.length) {
+                    clearInterval(interval);
+                    setTimeout(showResult, 1000);
+                }
+            }, 800);
+        }
+        
+        function showResult() {
+            document.getElementById('processing').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('resultAge').textContent = userAge;
+            
+            // Generate some ridiculous "analysis"
+            const analyses = [
+                `After analyzing your ${document.getElementById('color').value} color preference and ${document.getElementById('breakfast').value} breakfast choice, our quantum algorithms have determined...`,
+                `The correlation between your ${document.getElementById('shoeSize').value} shoe size and ${document.getElementById('pets').value} pets has revealed...`,
+                `Your ${document.getElementById('socks').value} sock disappearance rate combined with ${document.getElementById('pineapple').value} GOAT preference confirms...`
+            ];
+            
+            const randomAnalysis = analyses[Math.floor(Math.random() * analyses.length)];
+            document.getElementById('confidence').innerHTML = `
+                <div style="margin-bottom: 15px; font-size: 0.9rem; opacity: 0.8;">
+                    ${randomAnalysis}
+                </div>
+                Confidence Level: ${(99.7 + Math.random() * 0.29).toFixed(2)}%<br>
+                <small>Margin of Error: ±0.001%</small>
+            `;
+        }
+        
+        function restart() {
+            currentStep = 1;
+            document.getElementById('questions').style.display = 'block';
+            document.getElementById('processing').style.display = 'none';
+            document.getElementById('result').style.display = 'none';
+            
+            // Reset all inputs
+            document.getElementById('age').value = '';
+            document.getElementById('color').value = '';
+            document.getElementById('shoeSize').value = '';
+            document.getElementById('pets').value = '';
+            document.getElementById('breakfast').value = '';
+            document.getElementById('pineapple').value = '';
+            document.getElementById('socks').value = '';
+            
+            // Show only first step
+            for (let i = 2; i <= 7; i++) {
+                document.getElementById(`step${i}`).classList.add('hidden');
+            }
+            document.getElementById('step1').classList.remove('hidden');
+            
+            stepButton.textContent = 'INITIATE CALCULATION SEQUENCE';
+            document.getElementById('processingSteps').innerHTML = '';
+            document.getElementById('progressFill').style.width = '0%';
+        }
+        
+        // Enter key support
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                nextStep();
+            }
+        });
+    </script>
+</body>
+</html>
